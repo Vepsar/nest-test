@@ -1,4 +1,5 @@
 import { Board } from 'src/boards/entities/board.entity';
+import { Task } from 'src/tasks/entities/task.entity';
 import { User } from 'src/users/entities/user.entity';
 import { ConnectionOptions } from 'typeorm';
 import {
@@ -22,7 +23,7 @@ const ormconfig = {
   reconnectionInterval: 1000,
   migrationsRun: true,
   migrationsTableName: 'custom_migration_table',
-  entities: [User, Board],
+  entities: [User, Board, Task],
   migrations: ['src/migrations/**/*.ts'],
   cli: {
     migrationsDir: 'src/migrations',

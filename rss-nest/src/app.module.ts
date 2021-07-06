@@ -8,7 +8,12 @@ import { BoardsModule } from './boards/boards.module';
 import { TasksModule } from './tasks/tasks.module';
 
 @Module({
-  imports: [UsersModule, TypeOrmModule.forRoot(ormconfig), BoardsModule, TasksModule],
+  imports: [
+    TypeOrmModule.forRoot(ormconfig),
+    UsersModule,
+    BoardsModule,
+    TasksModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
