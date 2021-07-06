@@ -8,6 +8,8 @@ import {
   Put,
   Res,
   UseGuards,
+  HttpException,
+  HttpStatus,
   // Res,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
@@ -35,8 +37,13 @@ export class TasksController {
   }
 
   @Get(':taskid')
-  findOne(@Param('taskid') taskId: string, @Param('boardid') boardId: string) {
-    return this.tasksService.findOne(boardId, taskId);
+  async findOne(
+    @Param('taskid') taskId: string,
+    @Param('boardid') boardId: string,
+  ) {
+    const task = await this.tasksService.findOne(boardId, taskId);
+    if (task !== undefined) return task;
+    throw new HttpException('not found', HttpStatus.NOT_FOUND);
   }
 
   @Put(':taskid')

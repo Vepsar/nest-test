@@ -17,8 +17,6 @@ export class loginGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     try {
       const authHeader = req.headers.authorization;
-      console.log(authHeader);
-
       if (authHeader !== undefined) {
         const [connect, token] = authHeader.split(' ');
         if (connect !== 'Bearer') {
@@ -34,8 +32,6 @@ export class loginGuard implements CanActivate {
         throw new UnauthorizedException('not authorized');
       }
     } catch (e) {
-      //   console.error(e);
-
       throw new UnauthorizedException('not authorized');
     }
   }

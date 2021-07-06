@@ -7,6 +7,8 @@ import {
   Delete,
   Put,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { loginGuard } from 'src/login/login.guard';
 import { BoardsService } from './boards.service';
@@ -29,8 +31,10 @@ export class BoardsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.boardsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const board = await this.boardsService.findOne(id);
+    if (board !== undefined) return board;
+    throw new HttpException('not found', HttpStatus.NOT_FOUND);
   }
 
   @Put(':id')
