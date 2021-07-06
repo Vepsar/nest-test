@@ -15,6 +15,7 @@ const { POSTGRES_PORT } = process.env;
 const { POSTGRES_USER } = process.env;
 const { POSTGRES_PASSWORD } = process.env;
 const { POSTGRES_DB } = process.env;
+const { SECRET_KEY } = process.env;
 
 export {
   PORT,
@@ -27,4 +28,5 @@ export {
   POSTGRES_PASSWORD,
   POSTGRES_PORT,
   POSTGRES_USER,
+  SECRET_KEY,
 };

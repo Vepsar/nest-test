@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'express';
 import { getRepository, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -42,15 +43,15 @@ export class TasksService {
     return updTask.raw;
   }
 
-  async remove(taskId: string): Promise<'delete' | HttpStatus> {
+  async remove(taskId: string, res: Response) {
     const task = await this.taskRepo.findOne({
       where: { id: taskId },
     });
     if (taskId !== undefined && task !== undefined) {
       const deleted = await this.taskRepo.delete({ id: `${taskId}` });
-      if (deleted.affected) return 'delete';
+      if (deleted.affected) res.status(204).send();
     }
-    return HttpStatus.NOT_FOUND;
+    res.status(404).send();
   }
 }
 

@@ -6,12 +6,18 @@ import {
   Param,
   Delete,
   Put,
+  Res,
+  UseGuards,
+  // Res,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { Response } from 'express';
+import { loginGuard } from 'src/login/login.guard';
 
 @Controller('boards/:boardid/tasks')
+@UseGuards(loginGuard)
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
@@ -43,7 +49,7 @@ export class TasksController {
   }
 
   @Delete(':taskid')
-  remove(@Param('taskid') id: string) {
-    return this.tasksService.remove(id);
+  remove(@Param('taskid') id: string, @Res() res: Response) {
+    return this.tasksService.remove(id, res);
   }
 }

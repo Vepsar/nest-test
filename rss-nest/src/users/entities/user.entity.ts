@@ -1,11 +1,11 @@
-import { createHash } from 'crypto';
+import { createHash } from 'src/utils/hashmiddle';
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'user' })
 export class User {
   @BeforeInsert()
   async hashpass() {
-    // this.password = await createHash(this.password)
+    this.password = await createHash(this.password);
   }
 
   @PrimaryGeneratedColumn('uuid')

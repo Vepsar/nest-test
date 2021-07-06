@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpCode, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { deleteBoard } from 'src/tasks/tasks.service';
 import { Repository } from 'typeorm';
@@ -31,12 +31,12 @@ export class BoardsService {
     return updBoard.raw;
   }
 
-  async remove(id: string): Promise<void | undefined> {
+  async remove(id: string): Promise<HttpStatus | undefined> {
     await deleteBoard(id);
     const resp = await this.boardRepo.findOne(id);
     if (resp !== undefined && id !== undefined) {
       await this.boardRepo.delete(id);
-      return;
+      return HttpStatus.NOT_FOUND;
     }
     return undefined;
   }
