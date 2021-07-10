@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { deleteUser } from 'src/tasks/tasks.service';
+import { TasksService } from 'src/tasks/tasks.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,7 +9,10 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private readonly taskService: TasksService,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponceDto> {
     const newUser = this.userRepo.create(createUserDto);
@@ -36,7 +39,7 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<'deleted' | 'not_found'> {
-    await deleteUser(id);
+    await this.taskService.deleteUser(id);
     const resp = this.userRepo.findOne(id);
     if (id !== undefined && resp !== undefined) {
       await this.userRepo.delete(id);

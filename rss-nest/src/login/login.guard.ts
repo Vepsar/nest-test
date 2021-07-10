@@ -20,7 +20,7 @@ export class loginGuard implements CanActivate {
       if (authHeader !== undefined) {
         const [connect, token] = authHeader.split(' ');
         if (connect !== 'Bearer') {
-          throw new UnauthorizedException('not authorized');
+          throw new UnauthorizedException('UNAUTARIZED_ACCESS');
         } else {
           if (token !== undefined) {
             this.jwtService.verify(token, { ignoreExpiration: true });
@@ -29,10 +29,10 @@ export class loginGuard implements CanActivate {
         }
         return false;
       } else {
-        throw new UnauthorizedException('not authorized');
+        throw new UnauthorizedException('UNAUTARIZED_ACCESS');
       }
     } catch (e) {
-      throw new UnauthorizedException('not authorized');
+      throw new UnauthorizedException('UNAUTARIZED_ACCESS');
     }
   }
 }

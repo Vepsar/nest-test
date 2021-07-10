@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpException } from '@nestjs/common';
 import { LoginService } from './login.service';
 import { CreateLoginDto } from './dto/create-login.dto';
 
@@ -8,6 +8,7 @@ export class LoginController {
 
   @Post()
   async create(@Body() createLoginDto: CreateLoginDto) {
-    return { token: await this.loginService.getToken(createLoginDto) };
+    const token = { token: await this.loginService.getToken(createLoginDto) };
+    if (token !== undefined) return token;
   }
 }

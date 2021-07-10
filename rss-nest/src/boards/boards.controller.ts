@@ -9,14 +9,17 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  UseFilters,
 } from '@nestjs/common';
 import { loginGuard } from 'src/login/login.guard';
+import { HttpExceptionFilter } from 'src/utils/http-exeption.filter';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 
 @Controller('boards')
 @UseGuards(loginGuard)
+@UseFilters(HttpExceptionFilter)
 export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
 
@@ -32,9 +35,13 @@ export class BoardsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const board = await this.boardsService.findOne(id);
-    if (board !== undefined) return board;
-    throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    try {
+      const board = await this.boardsService.findOne(id);
+      if (board !== undefined) return board;
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    } catch (err) {
+      throw err;
+    }
   }
 
   @Put(':id')

@@ -10,16 +10,18 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
-  // Res,
+  UseFilters,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Response } from 'express';
 import { loginGuard } from 'src/login/login.guard';
+import { HttpExceptionFilter } from 'src/utils/http-exeption.filter';
 
 @Controller('boards/:boardid/tasks')
 @UseGuards(loginGuard)
+@UseFilters(HttpExceptionFilter)
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
@@ -28,12 +30,20 @@ export class TasksController {
     @Body() createTaskDto: CreateTaskDto,
     @Param('boardid') boardId: string,
   ) {
-    return this.tasksService.create(boardId, createTaskDto);
+    try {
+      return this.tasksService.create(boardId, createTaskDto);
+    } catch (err) {
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
   }
 
   @Get()
   findAll(@Param('boardid') boardId: string) {
-    return this.tasksService.findAll(boardId);
+    try {
+      return this.tasksService.findAll(boardId);
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.NOT_FOUND);
+    }
   }
 
   @Get(':taskid')
@@ -52,11 +62,19 @@ export class TasksController {
     @Param('boardid') boardId: string,
     @Body() updateTaskDto: UpdateTaskDto,
   ) {
-    return this.tasksService.update(boardId, taskId, updateTaskDto);
+    try {
+      return this.tasksService.update(boardId, taskId, updateTaskDto);
+    } catch (err) {
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
   }
 
   @Delete(':taskid')
   remove(@Param('taskid') id: string, @Res() res: Response) {
-    return this.tasksService.remove(id, res);
+    try {
+      return this.tasksService.remove(id, res);
+    } catch (err) {
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
   }
 }

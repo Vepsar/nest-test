@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
-import { getRepository, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
@@ -53,35 +53,32 @@ export class TasksService {
     }
     res.status(404).send();
   }
-}
 
-const deleteUser = async (
-  userId: string | undefined,
-): Promise<void | undefined> => {
-  const taskRepo = getRepository(Task);
-  const tasks = await taskRepo.find({ where: { userId } });
-  if (tasks !== undefined) {
-    Promise.all(
-      tasks.map(async (task: Task): Promise<void> => {
-        if (task.id !== undefined)
-          await taskRepo.update(task.id, Object.assign({ userId: null }));
-      }),
-    );
+  async deleteBoard(boardId: string) {
+    const tasks = await this.taskRepo.find({ where: { boardId } });
+    if (tasks !== undefined) {
+      Promise.all(
+        tasks.map(async (task: Task): Promise<void> => {
+          await this.taskRepo.delete(task.id);
+        }),
+      );
+      return undefined;
+    }
   }
-  return undefined;
-};
 
-const deleteBoard = async (boardId: string) => {
-  const taskRepo = getRepository(Task);
-  const tasks = await taskRepo.find({ where: { boardId } });
-  if (tasks !== undefined) {
-    Promise.all(
-      tasks.map(async (task: Task): Promise<void> => {
-        await taskRepo.delete(task.id);
-      }),
-    );
+  async deleteUser(userId: string | undefined): Promise<void | undefined> {
+    const tasks = await this.taskRepo.find({ where: { userId } });
+    if (tasks !== undefined) {
+      Promise.all(
+        tasks.map(async (task: Task): Promise<void> => {
+          if (task.id !== undefined)
+            await this.taskRepo.update(
+              task.id,
+              Object.assign({ userId: null }),
+            );
+        }),
+      );
+    }
     return undefined;
   }
-};
-
-export { deleteUser, deleteBoard };
+}

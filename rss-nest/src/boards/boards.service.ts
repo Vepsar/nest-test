@@ -1,6 +1,6 @@
 import { HttpCode, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { deleteBoard } from 'src/tasks/tasks.service';
+import { TasksService } from 'src/tasks/tasks.service';
 import { Repository } from 'typeorm';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
@@ -8,7 +8,10 @@ import { Board } from './entities/board.entity';
 
 @Injectable()
 export class BoardsService {
-  constructor(@InjectRepository(Board) private boardRepo: Repository<Board>) {}
+  constructor(
+    @InjectRepository(Board) private boardRepo: Repository<Board>,
+    private readonly taskService: TasksService,
+  ) {}
 
   async create(createBoardDto: CreateBoardDto): Promise<Board> {
     const newBoard = this.boardRepo.create(createBoardDto);
@@ -32,11 +35,11 @@ export class BoardsService {
   }
 
   async remove(id: string): Promise<HttpStatus | undefined> {
-    await deleteBoard(id);
+    await this.taskService.deleteBoard(id);
     const resp = await this.boardRepo.findOne(id);
     if (resp !== undefined && id !== undefined) {
       await this.boardRepo.delete(id);
-      return HttpStatus.NOT_FOUND;
+      return HttpStatus.NO_CONTENT;
     }
     return undefined;
   }
